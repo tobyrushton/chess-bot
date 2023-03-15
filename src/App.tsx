@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useState, useEffect } from "react"
 /* @ts-ignore */
 import Board from './wasm/dist/board'
 /* @ts-ignore */
@@ -11,14 +11,26 @@ interface Board {
 }
 
 const App: FC = () => {
-    const test:Promise<{ Board: Board}> = Board({
-        locateFile: () => BoardWASM
-    })
+    const [board, setBoard] = useState<Board>()
 
-    test.then((core) => {
-        const temp = new core.Board()
-        console.log(temp.getBoard())
-    })
+    useEffect(() => {
+        const init = async () => {
+            const core = await Board({
+                locateFile: (path: string) => {
+                    if (path.endsWith('.wasm')) {
+                        return BoardWASM
+                    }
+                    return path
+                }
+            })
+            setBoard(new core.Board())
+        }
+        init()
+    }, [])
+
+    useEffect(() => {
+        console.log(board?.getBoard())
+    },[board])
 
     return (
         <div className="wrapper">
