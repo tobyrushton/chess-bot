@@ -24,6 +24,10 @@ class Board {
             return this->fenBoard;
         }
 
+        void setBoard(std::string newBoard){
+            this->fenBoard = newBoard;
+        }
+
         void createBoard(){
             for(int i = 0; i < 8; i++){
                 for(int j = 0; j < 8; j++){
@@ -37,5 +41,6 @@ EMSCRIPTEN_BINDINGS(Board) {
     class_<Board>("Board")
         .constructor<>()
         .function("getBoard", &Board::getBoard)
+        .function("setBoard", &Board::setBoard)
     ;
 }

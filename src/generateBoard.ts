@@ -1,4 +1,4 @@
-export const generateBoard = (fen:string):string[][] => {
+export const generateBoard = (fen:string):(string | null)[][] => {
     const rows = fen.split('/')
     const board = rows.map(row => {
         return row.split('').map(cell => {

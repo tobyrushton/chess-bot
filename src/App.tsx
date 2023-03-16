@@ -4,16 +4,14 @@ import Board from './wasm/dist/board'
 /* @ts-ignore */
 import BoardWASM from './wasm/dist/board.wasm'
 import { generateBoard } from "./generateBoard"
+import { updateBoard } from "./updateBoard"
+import type { DraggableState } from './types'
 import './App.css'
-
-interface Board {
-    new (): Board
-    getBoard(): string
-}
 
 const App: FC = () => {
     const [board, setBoard] = useState<Board>()
-    const [displayBoard, setDisplayBoard] = useState<string[][]>([])
+    const [displayBoard, setDisplayBoard] = useState<(string | null)[][]>([])
+    const [draggedPiece, setDraggedPiece] = useState<DraggableState>({ piece: '', coordinates: '' })
 
     useEffect(() => {
         const init = async () => {
@@ -35,8 +33,23 @@ const App: FC = () => {
     },[board])
 
     useEffect(() => {
-        console.log(displayBoard)
+        console.log(displayBoard, 'displayBoard')
     }, [displayBoard])
+
+    const handleDrag = (e: React.DragEvent<HTMLImageElement>) => {
+        const coordinates = document.elementFromPoint(e.clientX, e.clientY)?.getAttribute('data-coordinates') || ''
+        const temp = updateBoard(board.getBoard(), coordinates,draggedPiece.coordinates, draggedPiece.piece)
+        setDisplayBoard(generateBoard(temp))
+        board.setBoard(temp)
+    }
+
+    const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
+        setDraggedPiece({
+            piece: e.currentTarget.dataset.piece || '',
+            coordinates: e.currentTarget.dataset.coordinates || ''
+        })
+    }
+
 
     return (
         <div className="wrapper">
@@ -56,13 +69,19 @@ const App: FC = () => {
                                                     backgroundColor: (i + j) % 2 === 0 ? '#769656' : 'white', 
                                                     display: 'inline-grid',
                                                     }}
+                                                data-coordinates={`${i},${j}`}
                                             >
                                                 {
-                                                    displayBoard[i][j] && 
+                                                    piece && 
                                                     ( 
                                                         <img 
                                                             src={`/pieces/${piece === piece.toUpperCase() ? `w${piece.toUpperCase()}` : `b${piece.toUpperCase()}`}.svg`} 
                                                             className="piece"
+                                                            draggable
+                                                            onDragEnd={handleDrag}
+                                                            onDragStart={handleDragStart}
+                                                            data-coordinates={`${i},${j}`}
+                                                            data-piece={piece}
                                                         /> 
                                                     )
                                                 }
