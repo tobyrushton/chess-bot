@@ -39,5 +39,5 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
     },
-    plugins: [new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src/index.html')}), new NodePolyfillPlugin()],
+    plugins: [new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'public/index.html')}), new NodePolyfillPlugin()],
 }

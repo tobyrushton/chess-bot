@@ -3,6 +3,7 @@ import { FC, useState, useEffect } from "react"
 import Board from './wasm/dist/board'
 /* @ts-ignore */
 import BoardWASM from './wasm/dist/board.wasm'
+import { generateBoard } from "./generateBoard"
 import './App.css'
 
 interface Board {
@@ -12,6 +13,7 @@ interface Board {
 
 const App: FC = () => {
     const [board, setBoard] = useState<Board>()
+    const [displayBoard, setDisplayBoard] = useState<string[][]>([])
 
     useEffect(() => {
         const init = async () => {
@@ -29,20 +31,43 @@ const App: FC = () => {
     }, [])
 
     useEffect(() => {
-        console.log(board?.getBoard())
+        setDisplayBoard(generateBoard(board?.getBoard() || ''))
     },[board])
+
+    useEffect(() => {
+        console.log(displayBoard)
+    }, [displayBoard])
 
     return (
         <div className="wrapper">
             <div className="board">
                 {
-                    new Array(8).fill(0).map((_, i) => {
+                    displayBoard.map((row, i) => {
                         return (
                             <div key={i}>
                                 {
-                                    new Array(8).fill(0).map((_, j) => {
+                                    row.map((piece, j) => {
                                         return (
-                                            <div key={j} style={{ width: 75, height: 75, backgroundColor: (i + j) % 2 === 0 ? 'black' : 'white' }} />
+                                            <div 
+                                                key={j} 
+                                                style={{ 
+                                                    width: 75, 
+                                                    height: 75, 
+                                                    backgroundColor: (i + j) % 2 === 0 ? '#769656' : 'white', 
+                                                    display: 'inline-grid',
+                                                    }}
+                                            >
+                                                {
+                                                    displayBoard[i][j] && 
+                                                    ( 
+                                                        <img 
+                                                            src={`/pieces/${piece === piece.toUpperCase() ? `w${piece.toUpperCase()}` : `b${piece.toUpperCase()}`}.svg`} 
+                                                            className="piece"
+                                                        /> 
+                                                    )
+                                                }
+                                            </div>
+
                                         )
                                     })
                                 }
