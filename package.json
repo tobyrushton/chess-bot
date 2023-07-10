@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve",
-    "build": "webpack"
+    "build": "webpack",
+    "wasm": "cd src/wasm/cpp && emcc Board.cpp Piece.cpp --bind -sWASM=1 -sMODULARIZE=1 -o ../dist/board.js -O3"
   },
   "keywords": [],
   "author": "",
